@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/gkany/graphSDK/types"
+	"github.com/Cocos-BCX/cocos-go/types"
 	"github.com/juju/errors"
 )
 

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/gkany/graphSDK/config"
-	"github.com/gkany/graphSDK/util"
+	"github.com/Cocos-BCX/cocos-go/config"
+	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gkany/graphSDK/logging"
-	"github.com/gkany/graphSDK/util"
+	"github.com/Cocos-BCX/cocos-go/logging"
+	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/juju/errors"
 	"github.com/pquerna/ffjson/ffjson"
 )

@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gkany/graphSDK/gen/data"
-	"github.com/gkany/graphSDK/types"
-	"github.com/gkany/graphSDK/util"
+	"github.com/Cocos-BCX/cocos-go/gen/data"
+	"github.com/Cocos-BCX/cocos-go/types"
+	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/denkhaus/gojson"
 	"github.com/juju/errors"
 	"github.com/pquerna/ffjson/ffjson"
@@ -60,7 +60,7 @@ func generateOpData(d GenData) error {
 			return errors.Annotate(err, "GenerateWithTypeGuessing")
 		}
 
-		fmt.Println("generated struct ", string(buf))
+		// fmt.Println("generated struct ", string(buf))
 	}
 
 	return nil

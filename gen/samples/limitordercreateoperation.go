@@ -4,8 +4,8 @@
 package samples
 
 import (
-	"github.com/gkany/graphSDK/gen/data"
-	"github.com/gkany/graphSDK/types"
+	"github.com/Cocos-BCX/cocos-go/gen/data"
+	"github.com/Cocos-BCX/cocos-go/types"
 )
 
 var (

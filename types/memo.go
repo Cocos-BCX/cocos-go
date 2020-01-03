@@ -9,10 +9,9 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
-	"fmt"
 	"strconv"
 
-	"github.com/gkany/graphSDK/util"
+	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/juju/errors"
 )
 
@@ -24,7 +23,6 @@ type Memo struct {
 }
 
 func (p Memo) Marshal(enc *util.TypeEncoder) error {
-	fmt.Println("Memo Marshal")
 	if err := enc.Encode(p.From); err != nil {
 		return errors.Annotate(err, "encode from")
 	}
@@ -117,34 +115,6 @@ func (p Memo) Decrypt(priv *PrivateKey) (string, error) {
 	return string(msg), nil
 }
 
-// func (p Memo) cypherBlock(sec []byte) ([]byte, cipher.Block, error) {
-// 	//ss := sha512.Sum512(sec)
-
-// 	var seed []byte
-// 	seed = append(seed, []byte(strconv.FormatUint(uint64(p.Nonce), 10))...)
-// 	seed = append(seed, []byte(hex.EncodeToString(sec[:]))...) //[]byte(hex.EncodeToString(ss[:]))...)
-
-// 	sd := sha512.Sum512(seed)
-// 	hash := hex.EncodeToString(sd[:])
-
-// 	iv, err := hex.DecodeString(string(hash[64:96]))
-// 	if err != nil {
-// 		return nil, nil, errors.Annotate(err, "DecodeString [iv]")
-// 	}
-
-// 	key, err := hex.DecodeString(string(hash[:64]))
-// 	if err != nil {
-// 		return nil, nil, errors.Annotate(err, "DecodeString [key]")
-// 	}
-
-// 	blk, err := aes.NewCipher(key)
-// 	if err != nil {
-// 		return nil, nil, errors.Annotate(err, "NewCipher")
-// 	}
-
-// 	return iv, blk, nil
-// }
-
 func (p Memo) cypherBlock(sec []byte) ([]byte, cipher.Block, error) {
 	ss := sha512.Sum512(sec)
 
@@ -180,12 +150,9 @@ func pad(buf []byte, length int) []byte {
 	return buf
 }
 
-
 type MemoPair []interface{}
 
 func (v MemoPair) Marshal(enc *util.TypeEncoder) error {
-	fmt.Println("MemoPair Marshal")
-
 	if v == nil {
 		return nil
 	}
@@ -204,42 +171,3 @@ func (v MemoPair) Marshal(enc *util.TypeEncoder) error {
 
 	return nil
 }
-
-/*
-func (v MemoPair) MarshalJSON() ([]byte, error) {
-	return ffjson.Marshal(v)
-}
-
-func (v *MemoPair) UnmarshalJSON(data []byte) error {
-	raw := make([]json.RawMessage, 2)
-	if err := ffjson.Unmarshal(data, &raw); err != nil {
-		return errors.Annotate(err, "unmarshal raw object")
-	}
-
-	var encryptType uint8
-	if err := ffjson.Unmarshal(raw[0], &encryptType); err != nil {
-		return errors.Annotate(err, "unmarshal encryptType")
-	}
-
-	desc := fmt.Sprintf("encrypt type %s", encryptType)
-	if encryptType == 0 {
-		var memo string
-		if err := ffjson.Unmarshal(raw[1], &memo); err != nil {
-			logging.DDumpUnmarshaled(desc, raw[1])
-			return errors.Annotatef(err, "unmarshal encrypt type %v", encryptType)
-		}
-		v = &MemoPair{encryptType, memo,}
-	} else if encryptType == 1 {
-		var memo Memo
-		if err := ffjson.Unmarshal(raw[1], &memo); err != nil {
-			logging.DDumpUnmarshaled(desc, raw[1])
-			return errors.Annotatef(err, "unmarshal encrypt type %v", encryptType)
-		}
-		v = &MemoPair{encryptType, memo,}
-	} else {
-		return errors.Errorf("unmarshal memo error, encryptType(%v) unknown", encryptType)
-	}
-
-	return nil
-}
-*/

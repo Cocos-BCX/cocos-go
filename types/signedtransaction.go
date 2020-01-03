@@ -10,9 +10,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gkany/graphSDK/config"
-	"github.com/gkany/graphSDK/logging"
-	"github.com/gkany/graphSDK/util"
+	"github.com/Cocos-BCX/cocos-go/config"
+	"github.com/Cocos-BCX/cocos-go/logging"
+	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/pquerna/ffjson/ffjson"
 
 	"github.com/juju/errors"
@@ -22,74 +22,6 @@ const (
 	TxExpirationDefault = 30 * time.Second
 )
 
-//TODO: implement
-// @property
-// def id(self):
-// 	""" The transaction id of this transaction
-// 	"""
-// 	# Store signatures temporarily since they are not part of
-// 	# transaction id
-// 	sigs = self.data["signatures"]
-// 	self.data.pop("signatures", None)
-
-// 	# Generage Hash of the seriliazed version
-// 	h = hashlib.sha256(bytes(self)).digest()
-
-// 	# recover signatures
-// 	self.data["signatures"] = sigs
-
-// 	# Return properly truncated tx hash
-// return hexlify(h[:20]).decode("ascii")
-// type AgreedTaskPair []string
-
-/*
-// optional<std::pair<tx_hash_type,object_id_type>> agreed_task={};
-type AgreedTaskPair struct {
-	TxHash      []byte
-	ObjectId    ObjectID
-}
-
-func (p AgreedTaskPair) Marshal(enc *util.TypeEncoder) error {
-	if err := enc.Encode(p); err != nil {
-		return errors.Annotate(err, "Encode AgreedTaskPair")
-	}
-
-	return nil
-}
-
-func (p AgreedTaskPair) MarshalJSON() ([]byte, error) {
-	return ffjson.Marshal([]interface{}{
-		p.TxHash,
-		p.ObjectId,
-	})
-}
-
-func (p *AgreedTaskPair) UnmarshalJSON(data []byte) error {
-	raw := make([]json.RawMessage, 2)
-	if err := ffjson.Unmarshal(data, &raw); err != nil {
-		return errors.Annotate(err, "Unmarshal [raw]")
-	}
-
-	if len(raw) != 2 {
-		return ErrInvalidInputLength
-	}
-
-	if err := ffjson.Unmarshal(raw[0], &p.TxHash); err != nil {
-		return errors.Annotate(err, "Unmarshal [TxHash]")
-	}
-
-	if err := ffjson.Unmarshal(raw[1], &p.ObjectId); err != nil {
-		logging.DDumpUnmarshaled(
-			fmt.Sprintf("tx hash %s", p.TxHash),
-			raw[1],
-		)
-		return errors.Annotatef(err, "Unmarshal object id %v", p.ObjectId)
-	}
-
-	return nil
-}
-
-*/
 type SignedTransactions []SignedTransaction
 type AgreedTaskPair []string
 
@@ -143,7 +75,6 @@ func (tx SignedTransaction) Digest(chain *config.ChainConfig) ([]byte, error) {
 		return nil, ErrChainConfigIsUndefined
 	}
 
-	// test
 	// fmt.Println("-------------> Digest: ")
 	// if txJSON, err := tx.MarshalJSON(); err != nil {
 	// 	fmt.Println(err)
@@ -168,7 +99,7 @@ func (tx SignedTransaction) Digest(chain *config.ChainConfig) ([]byte, error) {
 	if err != nil {
 		return nil, errors.Annotatef(err, "Serialize")
 	}
-	fmt.Printf("rawTrx - Hex: %v\n", hex.EncodeToString(rawTrx[:]))
+	// fmt.Printf("rawTrx - Hex: %v\n", hex.EncodeToString(rawTrx[:]))
 
 	//	digestTrx := sha256.Sum256(rawTrx)
 	//	util.Dump("digest trx", hex.EncodeToString(digestTrx[:]))
@@ -179,7 +110,7 @@ func (tx SignedTransaction) Digest(chain *config.ChainConfig) ([]byte, error) {
 
 	digest := writer.Sum(nil)
 	//	util.Dump("digest trx all", hex.EncodeToString(digest[:]))
-	fmt.Printf("digest: %v, hex: %s\n", digest[:], hex.EncodeToString(digest[:]))
+	// fmt.Printf("digest: %v, hex: %s\n", digest[:], hex.EncodeToString(digest[:]))
 	
 	return digest[:], nil
 }

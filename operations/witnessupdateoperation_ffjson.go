@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gkany/graphSDK/types"
+	"github.com/Cocos-BCX/cocos-go/types"
 	fflib "github.com/pquerna/ffjson/fflib/v1"
 )
 

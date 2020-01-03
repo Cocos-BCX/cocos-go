@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gkany/graphSDK"
-	"github.com/gkany/graphSDK/config"
-	"github.com/gkany/graphSDK/crypto"
+	sdk "github.com/Cocos-BCX/cocos-go"
+	"github.com/Cocos-BCX/cocos-go/config"
+	"github.com/Cocos-BCX/cocos-go/crypto"
 )
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 
 	// wallet api 测试
 	log.Println("------- wallet api test ----------")
-	walletAPI := graphSDK.NewWalletAPI(walletURL)
+	walletAPI := sdk.NewWalletAPI(walletURL)
 	if err := walletAPI.Connect(); err != nil {
 		log.Println(err)
 	}

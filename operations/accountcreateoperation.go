@@ -3,8 +3,8 @@ package operations
 //go:generate ffjson $GOFILE
 
 import (
-	"github.com/gkany/graphSDK/types"
-	"github.com/gkany/graphSDK/util"
+	"github.com/Cocos-BCX/cocos-go/types"
+	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/juju/errors"
 )
 
@@ -59,12 +59,6 @@ func (p AccountCreateOperation) Marshal(enc *util.TypeEncoder) error {
 	if err := enc.Encode(p.Registrar); err != nil {
 		return errors.Annotate(err, "encode Registrar")
 	}
-	// if err := enc.Encode(p.Referrer); err != nil {
-	// 	return errors.Annotate(err, "encode Referrer")
-	// }
-	// if err := enc.Encode(p.ReferrerPercent); err != nil {
-	// 	return errors.Annotate(err, "encode ReferrerPercent")
-	// }
 	if err := enc.Encode(p.Name); err != nil {
 		return errors.Annotate(err, "encode Name")
 	}

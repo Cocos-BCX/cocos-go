@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/gkany/graphSDK/config"
+	"github.com/Cocos-BCX/cocos-go/config"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -70,7 +70,7 @@ var sharedSecrets = [][]interface{}{
 }
 
 func Test_SharedSecrets(t *testing.T) {
-	config.SetCurrent(config.ChainIDGPH)
+	config.SetCurrent(config.ChainIDTestnet)
 
 	for _, tst := range sharedSecrets {
 		priv, err := NewPrivateKeyFromWif(tst[0].(string))
@@ -98,7 +98,7 @@ func Test_SharedSecrets(t *testing.T) {
 }
 
 func Test_MemoDecrypt(t *testing.T) {
-	config.SetCurrent(config.ChainIDGPH)
+	config.SetCurrent(config.ChainIDTestnet)
 
 	for _, tst := range testCases {
 		from, err := NewPublicKeyFromString(tst["fromPub"])
@@ -144,7 +144,7 @@ func Test_MemoDecrypt(t *testing.T) {
 }
 
 func Test_MemoEncrypt(t *testing.T) {
-	config.SetCurrent(config.ChainIDGPH)
+	config.SetCurrent(config.ChainIDTestnet)
 
 	for _, tst := range testCases {
 

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gkany/graphSDK/config"
-	"github.com/gkany/graphSDK/crypto"
-	"github.com/gkany/graphSDK/types"
+	"github.com/Cocos-BCX/cocos-go/config"
+	"github.com/Cocos-BCX/cocos-go/crypto"
+	"github.com/Cocos-BCX/cocos-go/types"
 )
 
 func main() {

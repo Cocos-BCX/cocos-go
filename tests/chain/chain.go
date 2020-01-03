@@ -8,13 +8,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gkany/graphSDK"
-	"github.com/gkany/graphSDK/config"
-	"github.com/gkany/graphSDK/crypto"
-	"github.com/gkany/graphSDK/types"
+	sdk "github.com/Cocos-BCX/cocos-go"
+	"github.com/Cocos-BCX/cocos-go/config"
+	"github.com/Cocos-BCX/cocos-go/crypto"
+	"github.com/Cocos-BCX/cocos-go/types"
 )
 
-func getData(api graphSDK.WebsocketAPI) {
+func getData(api sdk.WebsocketAPI) {
 	accountID := types.NewAccountID("1.2.16") // nicotest 1.2.16
 	coreAsset := types.NewAssetID("1.3.0")
 
@@ -43,7 +43,7 @@ func getData(api graphSDK.WebsocketAPI) {
 	}
 }
 
-func testTransfer(api graphSDK.WebsocketAPI) {
+func testTransfer(api sdk.WebsocketAPI) {
 	privateKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
 	// publicKey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
 	localKeyBag := crypto.NewKeyBag()
@@ -73,7 +73,7 @@ func testTransfer(api graphSDK.WebsocketAPI) {
 	fmt.Println(err3)
 }
 
-func testListAssets(api graphSDK.WebsocketAPI) {
+func testListAssets(api sdk.WebsocketAPI) {
 	assets, error := api.ListAssets("", 5)
 	if error != nil {
 		fmt.Println(error)
@@ -81,7 +81,7 @@ func testListAssets(api graphSDK.WebsocketAPI) {
 	fmt.Println(assets)
 }
 
-func testCreateAsset(api graphSDK.WebsocketAPI, name string) {
+func testCreateAsset(api sdk.WebsocketAPI, name string) {
 	privateKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
 	// publicKey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
 	keyBag := crypto.NewKeyBag()
@@ -115,7 +115,7 @@ func testCreateAsset(api graphSDK.WebsocketAPI, name string) {
 	}
 }
 
-func testGetBlock(api graphSDK.WebsocketAPI, from, to uint64) {
+func testGetBlock(api sdk.WebsocketAPI, from, to uint64) {
 	for i := from; i <= to; i++ {
 		log.Printf("block: %v ", i)
 		block, err := api.GetBlock(i)
@@ -131,7 +131,7 @@ func testGetBlock(api graphSDK.WebsocketAPI, from, to uint64) {
 	}
 }
 
-func testHeadBlockPrefix(api graphSDK.WebsocketAPI) {
+func testHeadBlockPrefix(api sdk.WebsocketAPI) {
 	fmt.Println("\nGetDynamicGlobalProperties: ")
 	gdp, err := api.GetDynamicGlobalProperties()
 	if err != nil {
@@ -161,7 +161,7 @@ func testHeadBlockPrefix(api graphSDK.WebsocketAPI) {
 	fmt.Println("prefix: ", prefix)
 }
 
-func testBroadcastTrx(api graphSDK.WebsocketAPI) {
+func testBroadcastTrx(api sdk.WebsocketAPI) {
 	fmt.Println("\nUnmarshal trx")
 	trxJSON := `
 	{
@@ -210,7 +210,7 @@ func testBroadcastTrx(api graphSDK.WebsocketAPI) {
 }
 
 ///// WebsocketAPI test
-func testGetAccountBalances(api graphSDK.WebsocketAPI) {
+func testGetAccountBalances(api sdk.WebsocketAPI) {
 	name := "nicotest"
 	account, err := api.GetAccountByName(name)
 	if err != nil {
@@ -228,7 +228,7 @@ func testGetAccountBalances(api graphSDK.WebsocketAPI) {
 	fmt.Println(accountBalances)
 }
 
-func testGetAccountByName(api graphSDK.WebsocketAPI) {
+func testGetAccountByName(api sdk.WebsocketAPI) {
 	name := "nicotest"
 	account, err := api.GetAccountByName(name)
 	if err != nil {
@@ -238,7 +238,7 @@ func testGetAccountByName(api graphSDK.WebsocketAPI) {
 	fmt.Println(account)
 }
 
-func testAPIID(api graphSDK.WebsocketAPI) {
+func testAPIID(api sdk.WebsocketAPI) {
 	history := api.HistoryAPIID()
 	fmt.Println("history api id: ", history)
 
@@ -249,7 +249,7 @@ func testAPIID(api graphSDK.WebsocketAPI) {
 	fmt.Println("broadcast api id: ", broadcast)
 }
 
-func testGetAccountHistory(api graphSDK.WebsocketAPI) {
+func testGetAccountHistory(api sdk.WebsocketAPI) {
 	name := "nicotest"
 	account, err := api.GetAccountByName(name)
 	if err != nil {
@@ -269,7 +269,7 @@ func testGetAccountHistory(api graphSDK.WebsocketAPI) {
 	fmt.Println(history)
 }
 
-func testGetAccounts(api graphSDK.WebsocketAPI) {
+func testGetAccounts(api sdk.WebsocketAPI) {
 	a1 := types.NewObjectID("1.2.16")
 	a2 := types.NewObjectID("1.2.15")
 	a3 := types.NewObjectID("1.2.14")
@@ -282,7 +282,7 @@ func testGetAccounts(api graphSDK.WebsocketAPI) {
 	fmt.Println(len(accounts))
 }
 
-func testGetBlockHeader(api graphSDK.WebsocketAPI, num int) {
+func testGetBlockHeader(api sdk.WebsocketAPI, num int) {
 	blockHeader, err := api.GetBlockHeader(uint64(num))
 	if err != nil {
 		fmt.Println(err)
@@ -291,7 +291,7 @@ func testGetBlockHeader(api graphSDK.WebsocketAPI, num int) {
 	fmt.Println(blockHeader)
 }
 
-func testRegisterAccount(api graphSDK.WebsocketAPI, name string) {
+func testRegisterAccount(api sdk.WebsocketAPI, name string) {
 	// "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx",
 	// "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
 	pubkey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
@@ -310,7 +310,7 @@ func testRegisterAccount(api graphSDK.WebsocketAPI, name string) {
 	fmt.Println(err)
 }
 
-func testUpgradeAccount(api graphSDK.WebsocketAPI, name string) {
+func testUpgradeAccount(api sdk.WebsocketAPI, name string) {
 	// name := "tester2"
 	priKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
 	keyBag := crypto.NewKeyBag()
@@ -320,7 +320,7 @@ func testUpgradeAccount(api graphSDK.WebsocketAPI, name string) {
 	fmt.Println(err)
 }
 
-func testGetWitness(api graphSDK.WebsocketAPI) {
+func testGetWitness(api sdk.WebsocketAPI) {
 	witness, err := api.GetWitness("init5")
 	fmt.Println(witness, err)
 
@@ -328,12 +328,12 @@ func testGetWitness(api graphSDK.WebsocketAPI) {
 	fmt.Println(witness, err)
 }
 
-func testGetCommitteeMember(api graphSDK.WebsocketAPI) {
+func testGetCommitteeMember(api sdk.WebsocketAPI) {
 	committee, err := api.GetCommitteeMember("1.2.5")
 	fmt.Println(committee, err)
 }
 
-func testCreateContract(api graphSDK.WebsocketAPI) {
+func testCreateContract(api sdk.WebsocketAPI) {
 	name := "nicotest"
 	account, err := api.GetAccountByName(name)
 	if err != nil {
@@ -358,7 +358,7 @@ func testCreateContract(api graphSDK.WebsocketAPI) {
 	fmt.Println(error)
 }
 
-func testGetVestingBalances(api graphSDK.WebsocketAPI) {
+func testGetVestingBalances(api sdk.WebsocketAPI) {
 	name := "nicotest"
 	account, err := api.GetAccountByName(name)
 	if err != nil {
@@ -370,22 +370,22 @@ func testGetVestingBalances(api graphSDK.WebsocketAPI) {
 	fmt.Println(result, err)
 }
 
-func testGetConnectedPeers(api graphSDK.WebsocketAPI) {
+func testGetConnectedPeers(api sdk.WebsocketAPI) {
 	result, err := api.GetConnectedPeers()
 	fmt.Println(result, err)
 }
 
-func testGetInfo(api graphSDK.WebsocketAPI) {
+func testGetInfo(api sdk.WebsocketAPI) {
 	result, err := api.Info()
 	fmt.Println(result, err)
 }
 
-func testGetGlobalProperties(api graphSDK.WebsocketAPI) {
+func testGetGlobalProperties(api sdk.WebsocketAPI) {
 	result, err := api.GetGlobalProperties()
 	fmt.Println(result, err)
 }
 
-func testGetChainProperties(api graphSDK.WebsocketAPI) {
+func testGetChainProperties(api sdk.WebsocketAPI) {
 	result, err := api.GetChainProperties()
 	fmt.Println(result, err)
 }
@@ -400,7 +400,7 @@ func main() {
 
 	// chain api 测试
 	log.Println("------- chain api test ----------")
-	api := graphSDK.NewWebsocketAPI(wsURL)
+	api := sdk.NewWebsocketAPI(wsURL)
 	if err := api.Connect(); err != nil {
 		log.Println(err)
 	}
@@ -418,24 +418,24 @@ func main() {
 	// testGetBlockHeader(api, 28738)
 	// testBroadcastTrx(api)
 
+	// assetName := "USDG"
+	// testCreateAsset(api, assetName)
+
+	// newAccountName := "tester20"
+	// testRegisterAccount(api, newAccountName)
+	// testUpgradeAccount(api, newAccountName)
+
 	// operation
 	// testTransfer(api)
 
-	// asset_name := "USDG"
-	// testCreateAsset(api, asset_name)
+	testGetWitness(api)
+	testGetCommitteeMember(api)
+	testCreateContract(api)
+	testGetVestingBalances(api)
 
-	// new_account_name := "tester3"
-	// testRegisterAccount(api, new_account_name)
-	// testUpgradeAccount(api, new_account_name)
-
-	// testGetWitness(api)
-	// testGetCommitteeMember(api)
-	// testCreateContract(api)
-	// testGetVestingBalances(api)
-
-	// testGetConnectedPeers(api)
+	testGetConnectedPeers(api)
 	testGetInfo(api)
-	// testGetGlobalProperties(api)
-	// testGetChainProperties(api)
+	testGetGlobalProperties(api)
+	testGetChainProperties(api)
 
 }

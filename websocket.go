@@ -1,22 +1,21 @@
-package graphSDK
+package cocos
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
-	"github.com/gkany/graphSDK/api"
-	"github.com/gkany/graphSDK/config"
-	"github.com/gkany/graphSDK/crypto"
-	"github.com/gkany/graphSDK/logging"
-	"github.com/gkany/graphSDK/operations"
-	"github.com/gkany/graphSDK/types"
-	"github.com/gkany/graphSDK/util"
+	"github.com/Cocos-BCX/cocos-go/api"
+	"github.com/Cocos-BCX/cocos-go/config"
+	"github.com/Cocos-BCX/cocos-go/crypto"
+	"github.com/Cocos-BCX/cocos-go/logging"
+	"github.com/Cocos-BCX/cocos-go/operations"
+	"github.com/Cocos-BCX/cocos-go/types"
+	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/juju/errors"
 	"github.com/pquerna/ffjson/ffjson"
 
 	// init operations
-	_ "github.com/gkany/graphSDK/operations"
+	_ "github.com/Cocos-BCX/cocos-go/operations"
 )
 
 const (
@@ -109,10 +108,10 @@ type WebsocketAPI interface {
 	WithDrawVesting(keyBag *crypto.KeyBag, owner *types.Account, id types.VestingBalanceID, amount types.AssetAmount) error
 
 	VoteForCommitteeMember(keyBag *crypto.KeyBag, votingAccount, committeeMember string, approve uint64) error
-	VoteForWitness(keyBag *crypto.KeyBag, votingAccount, witnessAccount string, approve uint64) error 
+	VoteForWitness(keyBag *crypto.KeyBag, votingAccount, witnessAccount string, approve uint64) error
 
 	GetConnectedPeers() (*types.NetWorkPeers, error)
-	Info()(*types.Info, error)
+	Info() (*types.Info, error)
 
 	// improt_balances
 
@@ -137,13 +136,13 @@ type WebsocketAPI interface {
 }
 
 type websocketAPI struct {
-	wsClient            ClientProvider
-	username            string
-	password            string
-	databaseAPIID       int
-	historyAPIID        int
-	broadcastAPIID      int
-	networkNodeAPIID    int
+	wsClient         ClientProvider
+	username         string
+	password         string
+	databaseAPIID    int
+	historyAPIID     int
+	broadcastAPIID   int
+	networkNodeAPIID int
 }
 
 func (p *websocketAPI) getAPIID(identifier string) (int, error) {
@@ -314,13 +313,11 @@ func (p *websocketAPI) BuildSignedTransaction(keyBag *crypto.KeyBag, ops ...type
 	}
 
 	tx.Operations = operations
-	fmt.Printf("tx: %v\n", tx)
 
 	reqPk, err := p.RequiredSigningKeys(tx)
 	if err != nil {
 		return nil, errors.Annotate(err, "RequiredSigningKeys")
 	}
-	fmt.Printf("reqPk: %v\n", reqPk)
 
 	signer := crypto.NewTransactionSigner(tx)
 
@@ -328,7 +325,6 @@ func (p *websocketAPI) BuildSignedTransaction(keyBag *crypto.KeyBag, ops ...type
 	if len(privKeys) == 0 {
 		return nil, types.ErrNoSigningKeyFound
 	}
-	// fmt.Printf("privKeys: %v\n", privKeys)
 
 	if err := signer.Sign(privKeys, config.Current()); err != nil {
 		return nil, errors.Annotate(err, "Sign")
@@ -576,7 +572,6 @@ func (p *websocketAPI) GetAccounts(accounts ...types.GrapheneObject) (types.Acco
 //GetDynamicGlobalProperties returns essential runtime properties of bitshares network
 func (p *websocketAPI) GetDynamicGlobalProperties() (*types.DynamicGlobalProperties, error) {
 	resp, err := p.wsClient.CallAPI(0, "get_dynamic_global_properties", types.EmptyParams)
-	fmt.Println(resp)
 	if err != nil {
 		return nil, errors.Annotate(err, "CallAPI")
 	}
@@ -593,7 +588,6 @@ func (p *websocketAPI) GetDynamicGlobalProperties() (*types.DynamicGlobalPropert
 
 func (p *websocketAPI) GetChainProperties() (*types.ChainProperty, error) {
 	resp, err := p.wsClient.CallAPI(0, "get_chain_properties", types.EmptyParams)
-	fmt.Println(resp)
 	if err != nil {
 		return nil, errors.Annotate(err, "CallAPI")
 	}
@@ -610,7 +604,6 @@ func (p *websocketAPI) GetChainProperties() (*types.ChainProperty, error) {
 
 func (p *websocketAPI) GetGlobalProperties() (*types.GlobalProperty, error) {
 	resp, err := p.wsClient.CallAPI(0, "get_global_properties", types.EmptyParams)
-	fmt.Println(resp)
 	if err != nil {
 		return nil, errors.Annotate(err, "CallAPI")
 	}
@@ -1523,7 +1516,7 @@ signed_transaction bid_collateral(string bidder_name,
 func (p *websocketAPI) CreateCommitteeMember(keyBag *crypto.KeyBag, ownerAccount types.Account, url string) error {
 	op := operations.CommitteeMemberCreateOperation{
 		CommitteeMemberAccount: ownerAccount.ID,
-		URL: url,
+		URL:                    url,
 	}
 
 	trx, err := p.BuildSignedTransaction(keyBag, &op)
@@ -1619,11 +1612,11 @@ func (p *websocketAPI) UpdateWitness(keyBag *crypto.KeyBag, witnessAccount types
 
 func (p *websocketAPI) ContractCreate(keyBag *crypto.KeyBag, ownerAccount *types.Account, name, data string, contractAuthority *types.PublicKey) error {
 	op := operations.ContractCreateOperation{
-		Owner: ownerAccount.ID,
-		Name: name,
-		Data: data,
+		Owner:             ownerAccount.ID,
+		Name:              name,
+		Data:              data,
 		ContractAuthority: *contractAuthority,
-		Extensions: types.Extensions{},
+		Extensions:        types.Extensions{},
 	}
 
 	trx, err := p.BuildSignedTransaction(keyBag, &op)
@@ -1640,9 +1633,9 @@ func (p *websocketAPI) ContractCreate(keyBag *crypto.KeyBag, ownerAccount *types
 
 func (p *websocketAPI) ReviseContract(keyBag *crypto.KeyBag, reviser *types.Account, contractID types.ContractID, data string) error {
 	op := operations.ReviseContractOperation{
-		Reviser: reviser.ID,
+		Reviser:    reviser.ID,
 		ContractID: contractID,
-		Data: data,
+		Data:       data,
 		Extensions: types.Extensions{},
 	}
 
@@ -1655,10 +1648,10 @@ func (p *websocketAPI) ReviseContract(keyBag *crypto.KeyBag, reviser *types.Acco
 		return errors.Annotate(err, "BroadcastTransaction")
 	}
 
-	return nil	
+	return nil
 }
 
-func (p *websocketAPI)GetVestingBalances(account *types.Account) (*types.VestingBalances, error) {
+func (p *websocketAPI) GetVestingBalances(account *types.Account) (*types.VestingBalances, error) {
 	resp, err := p.wsClient.CallAPI(0, "get_vesting_balances", account.ID)
 	if err != nil {
 		return nil, errors.Annotate(err, "CallAPI")
@@ -1674,7 +1667,6 @@ func (p *websocketAPI)GetVestingBalances(account *types.Account) (*types.Vesting
 	return &ret, nil
 }
 
-
 type VestingBalanceWithdrawOperation struct {
 	types.OperationFee
 	VestingBalance types.VestingBalanceID `json:"vesting_balance"`
@@ -1685,8 +1677,8 @@ type VestingBalanceWithdrawOperation struct {
 func (p *websocketAPI) WithDrawVesting(keyBag *crypto.KeyBag, owner *types.Account, id types.VestingBalanceID, amount types.AssetAmount) error {
 	op := operations.VestingBalanceWithdrawOperation{
 		VestingBalance: id,
-		Owner: owner.ID,
-		Amount: amount,
+		Owner:          owner.ID,
+		Amount:         amount,
 	}
 
 	trx, err := p.BuildSignedTransaction(keyBag, &op)
@@ -1701,7 +1693,7 @@ func (p *websocketAPI) WithDrawVesting(keyBag *crypto.KeyBag, owner *types.Accou
 	return nil
 }
 
-	// vote_for_committee_member
+// vote_for_committee_member
 func (p *websocketAPI) VoteForCommitteeMember(keyBag *crypto.KeyBag, votingAccount, committeeMember string, approve uint64) error {
 	votingAccountObject, err := p.GetAccountByName(votingAccount)
 	if err != nil {
@@ -1724,16 +1716,16 @@ func (p *websocketAPI) VoteForCommitteeMember(keyBag *crypto.KeyBag, votingAccou
 		}
 		votingAccountObject.Options.Votes = votes
 	} else {
-		votingAccountObject.Options.Votes = types.Votes{}  // clear
+		votingAccountObject.Options.Votes = types.Votes{} // clear
 	}
 
 	op := operations.AccountUpdateOperation{
-		Account: votingAccountObject.ID,
+		Account:    votingAccountObject.ID,
 		NewOptions: &votingAccountObject.Options,
-		LockWithVote: &types.LockWithVotePairType {
+		LockWithVote: &types.LockWithVotePairType{
 			types.VoteTypeCommittee,
 			types.AssetAmount{
-				Asset: types.AssetIDFromObject(types.CoreAsset),
+				Asset:  types.AssetIDFromObject(types.CoreAsset),
 				Amount: types.Int64(approve),
 			},
 		},
@@ -1773,16 +1765,16 @@ func (p *websocketAPI) VoteForWitness(keyBag *crypto.KeyBag, votingAccount, witn
 		}
 		votingAccountObject.Options.Votes = votes
 	} else {
-		votingAccountObject.Options.Votes = types.Votes{}  // clear
+		votingAccountObject.Options.Votes = types.Votes{} // clear
 	}
 
 	op := operations.AccountUpdateOperation{
-		Account: votingAccountObject.ID,
+		Account:    votingAccountObject.ID,
 		NewOptions: &votingAccountObject.Options,
-		LockWithVote: &types.LockWithVotePairType {
+		LockWithVote: &types.LockWithVotePairType{
 			types.VoteTypeWitness,
 			types.AssetAmount{
-				Asset: types.AssetIDFromObject(types.CoreAsset),
+				Asset:  types.AssetIDFromObject(types.CoreAsset),
 				Amount: types.Int64(approve),
 			},
 		},
@@ -1830,7 +1822,7 @@ func (p *websocketAPI) GetConnectedPeers() (*types.NetWorkPeers, error) {
 // 	return &ret, nil
 // }
 
-func (p *websocketAPI) Info()(*types.Info, error) {
+func (p *websocketAPI) Info() (*types.Info, error) {
 	chainProps, err := p.GetChainProperties()
 	if err != nil {
 		return nil, err
@@ -1845,13 +1837,13 @@ func (p *websocketAPI) Info()(*types.Info, error) {
 	}
 
 	return &types.Info{
-		HeadBlockNum: dynamicProps.HeadBlockNumber,
-		HeadBlockID: dynamicProps.HeadBlockID,
-		HeadBlockAge: dynamicProps.Time,
-		NextMaintenanceTime: dynamicProps.NextMaintenanceTime,
-		ChainID: chainProps.ChainID,
-		Participation: dynamicProps.RecentSlotsFilled,
-		ActiveWitnesses: globalProps.ActiveWitnesses,
+		HeadBlockNum:           dynamicProps.HeadBlockNumber,
+		HeadBlockID:            dynamicProps.HeadBlockID,
+		HeadBlockAge:           dynamicProps.Time,
+		NextMaintenanceTime:    dynamicProps.NextMaintenanceTime,
+		ChainID:                chainProps.ChainID,
+		Participation:          dynamicProps.RecentSlotsFilled,
+		ActiveWitnesses:        globalProps.ActiveWitnesses,
 		ActiveCommitteeMembers: globalProps.ActiveCommitteeMembers,
 	}, nil
 }

@@ -1,8 +1,8 @@
 package crypto
 
 import (
-	"github.com/gkany/graphSDK/config"
-	"github.com/gkany/graphSDK/types"
+	"github.com/Cocos-BCX/cocos-go/config"
+	"github.com/Cocos-BCX/cocos-go/types"
 	"github.com/juju/errors"
 )
 

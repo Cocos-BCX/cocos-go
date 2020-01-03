@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 
 	sort "github.com/emirpasic/gods/utils"
-	"github.com/gkany/graphSDK/util"
+	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/juju/errors"
 	"github.com/pquerna/ffjson/ffjson"
 )

@@ -1,11 +1,10 @@
-package graphSDK
+package cocos
 
 import (
 	"encoding/json"
-	"fmt"
 
-	"github.com/gkany/graphSDK/api"
-	"github.com/gkany/graphSDK/logging"
+	"github.com/Cocos-BCX/cocos-go/api"
+	"github.com/Cocos-BCX/cocos-go/logging"
 	"github.com/juju/errors"
 	deadlock "github.com/sasha-s/go-deadlock"
 	"github.com/tevino/abool"
@@ -42,8 +41,7 @@ func (p *SimpleClientProvider) CallAPI(apiID int, method string, args ...interfa
 	}
 
 	rawMessage, err := p.WebsocketClient.CallAPI(apiID, method, args...)
-	// fmt.Println(rawMessage)
-	fmt.Printf("rawMessage: %s\n", rawMessage)
+	// fmt.Printf("rawMessage: %s\n", rawMessage)
 	if err != nil {
 		return nil, errors.Annotate(err, "call api error")
 	}

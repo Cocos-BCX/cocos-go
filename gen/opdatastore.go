@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/gkany/graphSDK/gen/data"
-	"github.com/gkany/graphSDK/logging"
-	"github.com/gkany/graphSDK/types"
+	"github.com/Cocos-BCX/cocos-go/gen/data"
+	"github.com/Cocos-BCX/cocos-go/logging"
+	"github.com/Cocos-BCX/cocos-go/types"
 	"github.com/juju/errors"
 	"github.com/mitchellh/reflectwalk"
 	"github.com/stretchr/objx"

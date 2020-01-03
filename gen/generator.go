@@ -10,17 +10,17 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gkany/graphSDK/gen/data"
-	"github.com/gkany/graphSDK/logging"
-	"github.com/gkany/graphSDK/tests"
-	"github.com/gkany/graphSDK/types"
+	"github.com/Cocos-BCX/cocos-go/gen/data"
+	"github.com/Cocos-BCX/cocos-go/logging"
+	"github.com/Cocos-BCX/cocos-go/tests"
+	"github.com/Cocos-BCX/cocos-go/types"
 	"github.com/juju/errors"
 	"github.com/pquerna/ffjson/ffjson"
 	"github.com/stretchr/objx"
 	tomb "gopkg.in/tomb.v2"
 
 	// importing this initializes sample data fetching
-	"github.com/gkany/graphSDK/gen/samples"
+	"github.com/Cocos-BCX/cocos-go/gen/samples"
 )
 
 const (
@@ -279,7 +279,7 @@ func generateSampleData(d GenData) error {
 }
 
 func handleError(err error) {
-	fmt.Println("error: ", errors.ErrorStack(err))
+	// fmt.Println("error: ", errors.ErrorStack(err))
 
 	if tb.Alive() {
 		//kill generator goroutine and wait

@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gkany/graphSDK/logging"
+	"github.com/Cocos-BCX/cocos-go/logging"
 	"github.com/juju/errors"
 	"github.com/pquerna/ffjson/ffjson"
 	"github.com/tevino/abool"

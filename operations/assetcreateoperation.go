@@ -5,8 +5,8 @@ package operations
 import (
 	"strconv"
 
-	"github.com/gkany/graphSDK/types"
-	"github.com/gkany/graphSDK/util"
+	"github.com/Cocos-BCX/cocos-go/types"
+	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/juju/errors"
 )
 
