@@ -69,6 +69,8 @@ func (j *Contract) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	}
 	buf.WriteString(`,"name":`)
 	fflib.WriteJsonString(buf, string(j.Name))
+	buf.WriteString(`,"user_invoke_share_percent":`)
+	fflib.FormatBits2(buf, uint64(j.UserInvokeSharePercent), 10, false)
 	if j.IsRelease {
 		buf.WriteString(`,"is_release":true`)
 	} else {
@@ -92,6 +94,61 @@ func (j *Contract) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 		buf.Write(obj)
 
 	}
+	buf.WriteString(`,"contract_data":`)
+	if j.ContractData != nil {
+		buf.WriteString(`[`)
+		for i, v := range j.ContractData {
+			if i != 0 {
+				buf.WriteString(`,`)
+			}
+
+			{
+
+				obj, err = v.MarshalJSON()
+				if err != nil {
+					return err
+				}
+				buf.Write(obj)
+
+			}
+		}
+		buf.WriteString(`]`)
+	} else {
+		buf.WriteString(`null`)
+	}
+	buf.WriteString(`,"contract_ABI":`)
+	if j.ContractABI != nil {
+		buf.WriteString(`[`)
+		for i, v := range j.ContractABI {
+			if i != 0 {
+				buf.WriteString(`,`)
+			}
+
+			{
+
+				obj, err = v.MarshalJSON()
+				if err != nil {
+					return err
+				}
+				buf.Write(obj)
+
+			}
+		}
+		buf.WriteString(`]`)
+	} else {
+		buf.WriteString(`null`)
+	}
+	buf.WriteString(`,"lua_code_b_id":`)
+
+	{
+
+		obj, err = j.LuaCodeBID.MarshalJSON()
+		if err != nil {
+			return err
+		}
+		buf.Write(obj)
+
+	}
 	buf.WriteByte('}')
 	return nil
 }
@@ -108,6 +165,8 @@ const (
 
 	ffjtContractName
 
+	ffjtContractUserInvokeSharePercent
+
 	ffjtContractIsRelease
 
 	ffjtContractCurrentVersion
@@ -115,6 +174,12 @@ const (
 	ffjtContractCheckContractAuthority
 
 	ffjtContractContractAuthority
+
+	ffjtContractContractData
+
+	ffjtContractContractABI
+
+	ffjtContractLuaCodeBID
 )
 
 var ffjKeyContractID = []byte("id")
@@ -125,6 +190,8 @@ var ffjKeyContractOwner = []byte("owner")
 
 var ffjKeyContractName = []byte("name")
 
+var ffjKeyContractUserInvokeSharePercent = []byte("user_invoke_share_percent")
+
 var ffjKeyContractIsRelease = []byte("is_release")
 
 var ffjKeyContractCurrentVersion = []byte("current_version")
@@ -132,6 +199,12 @@ var ffjKeyContractCurrentVersion = []byte("current_version")
 var ffjKeyContractCheckContractAuthority = []byte("check_contract_authority")
 
 var ffjKeyContractContractAuthority = []byte("contract_authority")
+
+var ffjKeyContractContractData = []byte("contract_data")
+
+var ffjKeyContractContractABI = []byte("contract_ABI")
+
+var ffjKeyContractLuaCodeBID = []byte("lua_code_b_id")
 
 // UnmarshalJSON umarshall json - template of ffjson
 func (j *Contract) UnmarshalJSON(input []byte) error {
@@ -215,6 +288,16 @@ mainparse:
 						currentKey = ffjtContractContractAuthority
 						state = fflib.FFParse_want_colon
 						goto mainparse
+
+					} else if bytes.Equal(ffjKeyContractContractData, kn) {
+						currentKey = ffjtContractContractData
+						state = fflib.FFParse_want_colon
+						goto mainparse
+
+					} else if bytes.Equal(ffjKeyContractContractABI, kn) {
+						currentKey = ffjtContractContractABI
+						state = fflib.FFParse_want_colon
+						goto mainparse
 					}
 
 				case 'i':
@@ -226,6 +309,14 @@ mainparse:
 
 					} else if bytes.Equal(ffjKeyContractIsRelease, kn) {
 						currentKey = ffjtContractIsRelease
+						state = fflib.FFParse_want_colon
+						goto mainparse
+					}
+
+				case 'l':
+
+					if bytes.Equal(ffjKeyContractLuaCodeBID, kn) {
+						currentKey = ffjtContractLuaCodeBID
 						state = fflib.FFParse_want_colon
 						goto mainparse
 					}
@@ -246,6 +337,32 @@ mainparse:
 						goto mainparse
 					}
 
+				case 'u':
+
+					if bytes.Equal(ffjKeyContractUserInvokeSharePercent, kn) {
+						currentKey = ffjtContractUserInvokeSharePercent
+						state = fflib.FFParse_want_colon
+						goto mainparse
+					}
+
+				}
+
+				if fflib.AsciiEqualFold(ffjKeyContractLuaCodeBID, kn) {
+					currentKey = ffjtContractLuaCodeBID
+					state = fflib.FFParse_want_colon
+					goto mainparse
+				}
+
+				if fflib.AsciiEqualFold(ffjKeyContractContractABI, kn) {
+					currentKey = ffjtContractContractABI
+					state = fflib.FFParse_want_colon
+					goto mainparse
+				}
+
+				if fflib.AsciiEqualFold(ffjKeyContractContractData, kn) {
+					currentKey = ffjtContractContractData
+					state = fflib.FFParse_want_colon
+					goto mainparse
 				}
 
 				if fflib.AsciiEqualFold(ffjKeyContractContractAuthority, kn) {
@@ -268,6 +385,12 @@ mainparse:
 
 				if fflib.EqualFoldRight(ffjKeyContractIsRelease, kn) {
 					currentKey = ffjtContractIsRelease
+					state = fflib.FFParse_want_colon
+					goto mainparse
+				}
+
+				if fflib.EqualFoldRight(ffjKeyContractUserInvokeSharePercent, kn) {
+					currentKey = ffjtContractUserInvokeSharePercent
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
@@ -325,6 +448,9 @@ mainparse:
 				case ffjtContractName:
 					goto handle_Name
 
+				case ffjtContractUserInvokeSharePercent:
+					goto handle_UserInvokeSharePercent
+
 				case ffjtContractIsRelease:
 					goto handle_IsRelease
 
@@ -336,6 +462,15 @@ mainparse:
 
 				case ffjtContractContractAuthority:
 					goto handle_ContractAuthority
+
+				case ffjtContractContractData:
+					goto handle_ContractData
+
+				case ffjtContractContractABI:
+					goto handle_ContractABI
+
+				case ffjtContractLuaCodeBID:
+					goto handle_LuaCodeBID
 
 				case ffjtContractnosuchkey:
 					err = fs.SkipField(tok)
@@ -445,6 +580,36 @@ handle_Name:
 			outBuf := fs.Output.Bytes()
 
 			j.Name = string(string(outBuf))
+
+		}
+	}
+
+	state = fflib.FFParse_after_value
+	goto mainparse
+
+handle_UserInvokeSharePercent:
+
+	/* handler: j.UserInvokeSharePercent type=uint32 kind=uint32 quoted=false*/
+
+	{
+		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
+			return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for uint32", tok))
+		}
+	}
+
+	{
+
+		if tok == fflib.FFTok_null {
+
+		} else {
+
+			tval, err := fflib.ParseUint(fs.Output.Bytes(), 10, 32)
+
+			if err != nil {
+				return fs.WrapErr(err)
+			}
+
+			j.UserInvokeSharePercent = uint32(tval)
 
 		}
 	}
@@ -563,6 +728,177 @@ handle_ContractAuthority:
 			}
 
 			err = j.ContractAuthority.UnmarshalJSON(tbuf)
+			if err != nil {
+				return fs.WrapErr(err)
+			}
+		}
+		state = fflib.FFParse_after_value
+	}
+
+	state = fflib.FFParse_after_value
+	goto mainparse
+
+handle_ContractData:
+
+	/* handler: j.ContractData type=types.LuaMap kind=slice quoted=false*/
+
+	{
+
+		{
+			if tok != fflib.FFTok_left_brace && tok != fflib.FFTok_null {
+				return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for LuaMap", tok))
+			}
+		}
+
+		if tok == fflib.FFTok_null {
+			j.ContractData = nil
+		} else {
+
+			j.ContractData = []LuaTypeItem{}
+
+			wantVal := true
+
+			for {
+
+				var tmpJContractData LuaTypeItem
+
+				tok = fs.Scan()
+				if tok == fflib.FFTok_error {
+					goto tokerror
+				}
+				if tok == fflib.FFTok_right_brace {
+					break
+				}
+
+				if tok == fflib.FFTok_comma {
+					if wantVal == true {
+						// TODO(pquerna): this isn't an ideal error message, this handles
+						// things like [,,,] as an array value.
+						return fs.WrapErr(fmt.Errorf("wanted value token, but got token: %v", tok))
+					}
+					continue
+				} else {
+					wantVal = true
+				}
+
+				/* handler: tmpJContractData type=types.LuaTypeItem kind=slice quoted=false*/
+
+				{
+					if tok == fflib.FFTok_null {
+
+					} else {
+
+						tbuf, err := fs.CaptureField(tok)
+						if err != nil {
+							return fs.WrapErr(err)
+						}
+
+						err = tmpJContractData.UnmarshalJSON(tbuf)
+						if err != nil {
+							return fs.WrapErr(err)
+						}
+					}
+					state = fflib.FFParse_after_value
+				}
+
+				j.ContractData = append(j.ContractData, tmpJContractData)
+
+				wantVal = false
+			}
+		}
+	}
+
+	state = fflib.FFParse_after_value
+	goto mainparse
+
+handle_ContractABI:
+
+	/* handler: j.ContractABI type=types.LuaMap kind=slice quoted=false*/
+
+	{
+
+		{
+			if tok != fflib.FFTok_left_brace && tok != fflib.FFTok_null {
+				return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for LuaMap", tok))
+			}
+		}
+
+		if tok == fflib.FFTok_null {
+			j.ContractABI = nil
+		} else {
+
+			j.ContractABI = []LuaTypeItem{}
+
+			wantVal := true
+
+			for {
+
+				var tmpJContractABI LuaTypeItem
+
+				tok = fs.Scan()
+				if tok == fflib.FFTok_error {
+					goto tokerror
+				}
+				if tok == fflib.FFTok_right_brace {
+					break
+				}
+
+				if tok == fflib.FFTok_comma {
+					if wantVal == true {
+						// TODO(pquerna): this isn't an ideal error message, this handles
+						// things like [,,,] as an array value.
+						return fs.WrapErr(fmt.Errorf("wanted value token, but got token: %v", tok))
+					}
+					continue
+				} else {
+					wantVal = true
+				}
+
+				/* handler: tmpJContractABI type=types.LuaTypeItem kind=slice quoted=false*/
+
+				{
+					if tok == fflib.FFTok_null {
+
+					} else {
+
+						tbuf, err := fs.CaptureField(tok)
+						if err != nil {
+							return fs.WrapErr(err)
+						}
+
+						err = tmpJContractABI.UnmarshalJSON(tbuf)
+						if err != nil {
+							return fs.WrapErr(err)
+						}
+					}
+					state = fflib.FFParse_after_value
+				}
+
+				j.ContractABI = append(j.ContractABI, tmpJContractABI)
+
+				wantVal = false
+			}
+		}
+	}
+
+	state = fflib.FFParse_after_value
+	goto mainparse
+
+handle_LuaCodeBID:
+
+	/* handler: j.LuaCodeBID type=types.ContractBinCodeID kind=struct quoted=false*/
+
+	{
+		if tok == fflib.FFTok_null {
+
+		} else {
+
+			tbuf, err := fs.CaptureField(tok)
+			if err != nil {
+				return fs.WrapErr(err)
+			}
+
+			err = j.LuaCodeBID.UnmarshalJSON(tbuf)
 			if err != nil {
 				return fs.WrapErr(err)
 			}

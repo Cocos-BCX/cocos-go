@@ -10,6 +10,8 @@ import (
 
 //go:generate ffjson $GOFILE
 
+type VariantInt interface{}
+
 type DynamicGlobalProperties struct {
 	ID                             DynamicGlobalPropertyID `json:"id"`
 	HeadBlockNumber                UInt32                  `json:"head_block_number"`
@@ -19,7 +21,7 @@ type DynamicGlobalProperties struct {
 	CurrentTransactionCount        UInt32                  `json:"current_transaction_count"`
 	NextMaintenanceTime            Time                    `json:"next_maintenance_time"`
 	LastBudgetTime                 Time                    `json:"last_budget_time"`
-	WitnessBudget                  string                  `json:"witness_budget"`
+	WitnessBudget                  VariantInt              `json:"witness_budget"`
 	AccountsRegisteredThisInterval int                     `json:"accounts_registered_this_interval"`
 	RecentlyMissedCount            int64                   `json:"recently_missed_count"`
 	CurrentAslot                   int64                   `json:"current_aslot"`

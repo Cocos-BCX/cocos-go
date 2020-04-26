@@ -2,20 +2,21 @@ package cocos
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"time"
+	// init operations
 
 	"github.com/Cocos-BCX/cocos-go/api"
 	"github.com/Cocos-BCX/cocos-go/config"
 	"github.com/Cocos-BCX/cocos-go/crypto"
 	"github.com/Cocos-BCX/cocos-go/logging"
 	"github.com/Cocos-BCX/cocos-go/operations"
+	_ "github.com/Cocos-BCX/cocos-go/operations"
 	"github.com/Cocos-BCX/cocos-go/types"
 	"github.com/Cocos-BCX/cocos-go/util"
 	"github.com/juju/errors"
 	"github.com/pquerna/ffjson/ffjson"
-
-	// init operations
-	_ "github.com/Cocos-BCX/cocos-go/operations"
 )
 
 const (
@@ -100,9 +101,14 @@ type WebsocketAPI interface {
 	UpdateWitness(keyBag *crypto.KeyBag, witnessAccount types.Account, url *string, signKey *types.PublicKey, workStatus bool) error
 
 	ContractCreate(keyBag *crypto.KeyBag, ownerAccount *types.Account, name, data string, contractAuthority *types.PublicKey) error
-
 	ReviseContract(keyBag *crypto.KeyBag, reviser *types.Account, contractID types.ContractID, data string) error
 
+	ContractCreateFromFile(keyBag *crypto.KeyBag, ownerAccount *types.Account, name, filename string, contractAuthority *types.PublicKey) error
+	ReviseContractFromFile(keyBag *crypto.KeyBag, reviser *types.Account, contractID types.ContractID, filename string) error
+
+	CallContract(keyBag *crypto.KeyBag, caller *types.Account, contractID types.ContractID, function string, valueList []types.LuaTypeParam) error
+
+	GetContract(name string) (*types.Contract, error)
 	GetVestingBalances(account *types.Account) (*types.VestingBalances, error)
 
 	WithDrawVesting(keyBag *crypto.KeyBag, owner *types.Account, id types.VestingBalanceID, amount types.AssetAmount) error
@@ -494,6 +500,26 @@ func (p *websocketAPI) GetAccountByName(name string) (*types.Account, error) {
 	return &ret, nil
 }
 
+func (p *websocketAPI) GetContract(name string) (*types.Contract, error) {
+	resp, err := p.wsClient.CallAPI(0, "get_contract", name)
+	if err != nil {
+		return nil, errors.Annotate(err, "CallAPI")
+	}
+	fmt.Println("--------------------------- resp start")
+	fmt.Println(string(*resp))
+	fmt.Println("--------------------------- resp end")
+
+	// logging.DDumpJSON("get_contract <", resp)
+	// fmt.Println("get_contract <", resp)
+
+	ret := types.Contract{}
+	if err := ffjson.Unmarshal(*resp, &ret); err != nil {
+		return nil, errors.Annotate(err, "Unmarshal [Contract]")
+	}
+
+	return &ret, nil
+}
+
 func (p *websocketAPI) GetWitness(accountID string) (*types.Witness, error) {
 	resp, err := p.wsClient.CallAPI(0, "get_witness_by_account", accountID)
 	if err != nil {
@@ -572,6 +598,7 @@ func (p *websocketAPI) GetAccounts(accounts ...types.GrapheneObject) (types.Acco
 //GetDynamicGlobalProperties returns essential runtime properties of bitshares network
 func (p *websocketAPI) GetDynamicGlobalProperties() (*types.DynamicGlobalProperties, error) {
 	resp, err := p.wsClient.CallAPI(0, "get_dynamic_global_properties", types.EmptyParams)
+	fmt.Println(resp)
 	if err != nil {
 		return nil, errors.Annotate(err, "CallAPI")
 	}
@@ -588,6 +615,7 @@ func (p *websocketAPI) GetDynamicGlobalProperties() (*types.DynamicGlobalPropert
 
 func (p *websocketAPI) GetChainProperties() (*types.ChainProperty, error) {
 	resp, err := p.wsClient.CallAPI(0, "get_chain_properties", types.EmptyParams)
+	fmt.Println(resp)
 	if err != nil {
 		return nil, errors.Annotate(err, "CallAPI")
 	}
@@ -604,6 +632,7 @@ func (p *websocketAPI) GetChainProperties() (*types.ChainProperty, error) {
 
 func (p *websocketAPI) GetGlobalProperties() (*types.GlobalProperty, error) {
 	resp, err := p.wsClient.CallAPI(0, "get_global_properties", types.EmptyParams)
+	fmt.Println(resp)
 	if err != nil {
 		return nil, errors.Annotate(err, "CallAPI")
 	}
@@ -1649,6 +1678,45 @@ func (p *websocketAPI) ReviseContract(keyBag *crypto.KeyBag, reviser *types.Acco
 	}
 
 	return nil
+}
+
+func (p *websocketAPI) CallContract(keyBag *crypto.KeyBag, caller *types.Account, contractID types.ContractID, function string, valueList []types.LuaTypeParam) error {
+	op := operations.CallContractFunction{
+		Caller:       caller.ID,
+		ContractID:   contractID,
+		FunctionName: function,
+		ValueList:    valueList,
+		Extensions:   types.Extensions{},
+	}
+
+	trx, err := p.BuildSignedTransaction(keyBag, &op)
+	if err != nil {
+		return errors.Annotate(err, "BuildSignedTransaction")
+	}
+
+	if err := p.BroadcastTransaction(trx); err != nil {
+		return errors.Annotate(err, "BroadcastTransaction")
+	}
+
+	return nil
+}
+
+func (p *websocketAPI) ContractCreateFromFile(keyBag *crypto.KeyBag, ownerAccount *types.Account, name, filename string, contractAuthority *types.PublicKey) error {
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return errors.Annotate(err, "ReadFile")
+	}
+	// data := strings.Replace(string(bytes), "\n", " ", -1)
+	return p.ContractCreate(keyBag, ownerAccount, name, string(bytes), contractAuthority)
+}
+
+func (p *websocketAPI) ReviseContractFromFile(keyBag *crypto.KeyBag, reviser *types.Account, contractID types.ContractID, filename string) error {
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return errors.Annotate(err, "ReadFile")
+	}
+	// data := strings.Replace(string(bytes), "\n", " ", -1)
+	return p.ReviseContract(keyBag, reviser, contractID, string(bytes))
 }
 
 func (p *websocketAPI) GetVestingBalances(account *types.Account) (*types.VestingBalances, error) {
