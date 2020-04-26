@@ -6,6 +6,7 @@ import (
 	"math"
 	"net"
 	"os"
+	"strings"
 	"syscall"
 
 	"sync"
@@ -308,7 +309,21 @@ func (p *wsClient) Call(method string, args []interface{}) (*RPCCall, error) {
 		return nil, errors.Annotate(err, "SetDeadline")
 	}
 
-	if err := websocket.JSON.Send(p.conn, call.Request); err != nil {
+	// fmt.Println("\n\n---------- test start ------------")
+	bytes, error := ffjson.Marshal(call.Request)
+	if error != nil {
+		return nil, error
+	}
+	content := string(bytes)
+	// fmt.Printf("call.Request [Replace Before] content: %v\n", content)
+	content = strings.Replace(content, "\\u003c", "<", -1)
+	content = strings.Replace(content, "\\u003e", ">", -1)
+	content = strings.Replace(content, "\\u0026", "&", -1)
+	// fmt.Printf("call.Request [Replace After] content: %v\n\n", content)
+	// fmt.Println("call.Request ---------- test End ------------")
+
+	// if err := websocket.JSON.Send(p.conn, call.Request); err != nil {
+	if _, err := p.conn.Write([]byte(content)); err != nil {
 		p.mutex.Lock()
 		delete(p.pending, call.Request.ID)
 		p.mutex.Unlock()

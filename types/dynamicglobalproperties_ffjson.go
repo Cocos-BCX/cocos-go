@@ -5,6 +5,7 @@ package types
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	fflib "github.com/pquerna/ffjson/fflib/v1"
 )
@@ -95,7 +96,11 @@ func (j *DynamicGlobalProperties) MarshalJSONBuf(buf fflib.EncodingBuffer) error
 
 	}
 	buf.WriteString(`,"witness_budget":`)
-	fflib.WriteJsonString(buf, string(j.WitnessBudget))
+	/* Interface types must use runtime reflection. type=types.VariantInt kind=interface */
+	err = buf.Encode(j.WitnessBudget)
+	if err != nil {
+		return err
+	}
 	buf.WriteString(`,"accounts_registered_this_interval":`)
 	fflib.FormatBits2(buf, uint64(j.AccountsRegisteredThisInterval), 10, j.AccountsRegisteredThisInterval < 0)
 	buf.WriteString(`,"recently_missed_count":`)
@@ -714,24 +719,18 @@ handle_LastBudgetTime:
 
 handle_WitnessBudget:
 
-	/* handler: j.WitnessBudget type=string kind=string quoted=false*/
+	/* handler: j.WitnessBudget type=types.VariantInt kind=interface quoted=false*/
 
 	{
-
-		{
-			if tok != fflib.FFTok_string && tok != fflib.FFTok_null {
-				return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for string", tok))
-			}
+		/* Falling back. type=types.VariantInt kind=interface */
+		tbuf, err := fs.CaptureField(tok)
+		if err != nil {
+			return fs.WrapErr(err)
 		}
 
-		if tok == fflib.FFTok_null {
-
-		} else {
-
-			outBuf := fs.Output.Bytes()
-
-			j.WitnessBudget = string(string(outBuf))
-
+		err = json.Unmarshal(tbuf, &j.WitnessBudget)
+		if err != nil {
+			return fs.WrapErr(err)
 		}
 	}
 

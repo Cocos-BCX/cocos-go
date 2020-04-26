@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"runtime"
+	"strconv"
 
 	sdk "github.com/Cocos-BCX/cocos-go"
 	"github.com/Cocos-BCX/cocos-go/config"
@@ -352,10 +354,140 @@ func testCreateContract(api sdk.WebsocketAPI) {
 		return
 	}
 
-	contractName := "contract.debug.hello"
-	contractCode := "function hello() chainhelper:log('create contract test') end"
+	contractName := "contract.debug.hellotest"
+	contractCode := "function hello(str) chainhelper:log('create contract test, str: ' .. str) end"
 	error := api.ContractCreate(keyBag, account, contractName, contractCode, publicKey)
 	fmt.Println(error)
+}
+
+func testCallContract(api sdk.WebsocketAPI) {
+	fmt.Printf(">>> %v\n", runFuncName())
+	name := "nicotest"
+	account, err := api.GetAccountByName(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	priKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
+	// pubKey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
+	keyBag := crypto.NewKeyBag()
+	keyBag.Add(priKey)
+
+	// publicKey, err := types.NewPublicKeyFromString(pubKey)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+
+	contractName := "contract.debug.param0"
+	contract, err := api.GetContract(contractName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// func (p *websocketAPI) CallContract(keyBag *crypto.KeyBag, caller, creator *types.Account,
+	// contractID types.ContractID, function string, valueList []types.LuaType, amount float64)
+
+	functionName := "param"
+	// arg := types.LuaString{
+	// 	V: "Call Contract test",
+	// }
+	valueList := make([]types.LuaTypeParam, 0)
+	// valueList[0] = arg
+	error := api.CallContract(keyBag, account, contract.ID, functionName, valueList)
+	fmt.Println(error)
+}
+
+func testCreateContractFromFile(api sdk.WebsocketAPI) {
+	name := "nicotest"
+	account, err := api.GetAccountByName(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	priKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
+	pubKey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
+	keyBag := crypto.NewKeyBag()
+	keyBag.Add(priKey)
+
+	publicKey, err := types.NewPublicKeyFromString(pubKey)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	contractName := "contract.debug.param0" // contract.debug.test0248
+	// contractCode := "function hello() chainhelper:log('create contract test') end"
+	filename := "test1.lua"
+	error := api.ContractCreateFromFile(keyBag, account, contractName, filename, publicKey)
+	fmt.Println(error)
+}
+
+func testReveseContractFromFile(api sdk.WebsocketAPI) {
+	fmt.Printf(">>> %v\n", runFuncName())
+	name := "nicotest"
+	account, err := api.GetAccountByName(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	priKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
+	// pubKey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
+	keyBag := crypto.NewKeyBag()
+	keyBag.Add(priKey)
+
+	// publicKey, err := types.NewPublicKeyFromString(pubKey)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+
+	contractName := "contract.debug.param0" // contract.debug.test0248
+	contract, err := api.GetContract(contractName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	filename := "test1.lua"
+	// ReviseContractFromFile(keyBag *crypto.KeyBag, reviser *types.Account, contractID types.ContractID, filename string)
+	error := api.ReviseContractFromFile(keyBag, account, contract.ID, filename)
+	fmt.Println(error)
+}
+
+func testGetContract(api sdk.WebsocketAPI, name string) {
+	// contractName := "contract.debug.test0248" // contract.debug.test0248
+	// contractName := "1.16.2" // contract.debug.test0248
+	contract, error := api.GetContract(name)
+	if error != nil {
+		fmt.Println(error)
+		return
+	}
+	fmt.Println(contract)
+	fmt.Printf("contractData: %v\n", contract.ContractData)
+	fmt.Printf("contractABI: %v\n", contract.ContractABI)
+}
+
+func testGetContracts(api sdk.WebsocketAPI) {
+	// contractName := "contract.debug.test0248" // contract.debug.test0248
+	// contractName := "1.16.2" // contract.debug.test0248
+
+	max := 66
+	for i := 1; i < max; i++ {
+		name := "1.16." + strconv.Itoa(i)
+		contract, error := api.GetContract(name)
+		if error != nil {
+			fmt.Printf("get_contract [%v] error. %v\n", name, error)
+			return
+		}
+		// fmt.Printf("name: %v, contractData: %v\n", name, contract.ContractData)
+		fmt.Printf("name: %v, contractABI: %v\n\n", name, contract.ContractABI)
+	}
+
 }
 
 func testGetVestingBalances(api sdk.WebsocketAPI) {
@@ -390,13 +522,283 @@ func testGetChainProperties(api sdk.WebsocketAPI) {
 	fmt.Println(result, err)
 }
 
-func main() {
-	config.SetCurrent(config.ChainIDTestnet)
-	wsURL := "ws://test.cocosbcx.net"
+func testCreateContractFromFile2(api sdk.WebsocketAPI) {
+	fmt.Printf(">>> %v\n", runFuncName())
+	name := "nicotest"
+	account, err := api.GetAccountByName(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	// chainID := config.ChainIDLocal
+	priKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
+	pubKey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
+	keyBag := crypto.NewKeyBag()
+	keyBag.Add(priKey)
+
+	publicKey, err := types.NewPublicKeyFromString(pubKey)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	contractName := "contract.debug.param2" // contract.debug.test0248
+	// contractCode := "function hello() chainhelper:log('create contract test') end"
+	filename := "test2.lua"
+	error := api.ContractCreateFromFile(keyBag, account, contractName, filename, publicKey)
+	fmt.Println(error)
+}
+
+func testReviseContractFromFile2(api sdk.WebsocketAPI) {
+	fmt.Printf(">>> %v\n", runFuncName())
+	name := "nicotest"
+	account, err := api.GetAccountByName(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	priKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
+	// pubKey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
+	keyBag := crypto.NewKeyBag()
+	keyBag.Add(priKey)
+
+	contractName := "contract.debug.param2" // contract.debug.test0248
+	contract, err := api.GetContract(contractName)
+	if err != nil {
+		return
+	}
+	filename := "test2.lua"
+	error := api.ReviseContractFromFile(keyBag, account, contract.ID, filename)
+	fmt.Println(error)
+}
+
+func testCallContract2(api sdk.WebsocketAPI) {
+	fmt.Printf(">>> %v\n", runFuncName())
+	name := "nicotest"
+	account, err := api.GetAccountByName(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	priKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
+	// pubKey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
+	keyBag := crypto.NewKeyBag()
+	keyBag.Add(priKey)
+
+	// publicKey, err := types.NewPublicKeyFromString(pubKey)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+
+	contractName := "contract.debug.param2"
+	contract, err := api.GetContract(contractName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// func (p *websocketAPI) CallContract(keyBag *crypto.KeyBag, caller, creator *types.Account,
+	// contractID types.ContractID, function string, valueList []types.LuaType, amount float64)
+
+	functionName := "param1"
+	arg := types.LuaString{
+		V: "Call Contract test param1",
+	}
+	// valueList := make([]types.LuaTypeParam, 1)
+	// param1 := types.LuaTypeParam{
+	// 	types.LuaTypeString,
+	// 	arg,
+	// }
+	// valueList[0] = param1
+	valueList := []types.LuaTypeParam{
+		types.LuaTypeParam{
+			types.LuaTypeString,
+			arg,
+		},
+	}
+	error := api.CallContract(keyBag, account, contract.ID, functionName, valueList)
+	fmt.Println(error)
+}
+
+func testCallContract3(api sdk.WebsocketAPI) {
+	fmt.Printf(">>> %v\n", runFuncName())
+	name := "nicotest"
+	account, err := api.GetAccountByName(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	priKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
+	// pubKey := "COCOS56a5dTnfGpuPoWACnYj65dahcXMpTrNQkV3hHWCFkLxMF5mXpx"
+	keyBag := crypto.NewKeyBag()
+	keyBag.Add(priKey)
+
+	// publicKey, err := types.NewPublicKeyFromString(pubKey)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+
+	contractName := "contract.debug.param2"
+	contract, err := api.GetContract(contractName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// func (p *websocketAPI) CallContract(keyBag *crypto.KeyBag, caller, creator *types.Account,
+	// contractID types.ContractID, function string, valueList []types.LuaType, amount float64)
+
+	functionName := "param2"
+	arg := types.LuaString{
+		V: "Call Contract test param1",
+	}
+	// valueList := make([]types.LuaTypeParam, 1)
+	// param1 := types.LuaTypeParam{
+	// 	types.LuaTypeString,
+	// 	arg,
+	// }
+	// valueList[0] = param1
+	valueList := []types.LuaTypeParam{
+		types.LuaTypeParam{
+			types.LuaTypeString,
+			arg,
+		},
+		types.LuaTypeParam{
+			types.LuaTypeBool,
+			types.LuaBool{
+				V: true,
+			},
+		},
+	}
+	error := api.CallContract(keyBag, account, contract.ID, functionName, valueList)
+	fmt.Println(error)
+}
+
+func testCallContract4(api sdk.WebsocketAPI) {
+	fmt.Printf(">>> %v\n", runFuncName())
+	name := "nicotest"
+	account, err := api.GetAccountByName(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	priKey := "5J2SChqa9QxrCkdMor9VC2k9NT4R4ctRrJA6odQCPkb3yL89vxo"
+	keyBag := crypto.NewKeyBag()
+	keyBag.Add(priKey)
+
+	contractName := "contract.debug.param2"
+	contract, err := api.GetContract(contractName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	functionName := "test_luatype"
+	// test luatype string
+	// valueList := []types.LuaTypeParam{
+	// 	types.LuaTypeParam{
+	// 		types.LuaTypeString,
+	// 		types.LuaString{
+	// 			V: "test LuaString Type",
+	// 		},
+	// 	},
+	// }
+	// error := api.CallContract(keyBag, account, contract.ID, functionName, valueList)
+	// fmt.Println(error)
+
+	// // test luatype bool
+	// valueList = []types.LuaTypeParam{
+	// 	types.LuaTypeParam{
+	// 		types.LuaTypeBool,
+	// 		types.LuaBool{
+	// 			V: true,
+	// 		},
+	// 	},
+	// }
+	// error = api.CallContract(keyBag, account, contract.ID, functionName, valueList)
+	// fmt.Println(error)
+
+	// test luatype Int
+	// valueList := []types.LuaTypeParam{
+	// 	types.LuaTypeParam{
+	// 		types.LuaTypeInt,
+	// 		types.LuaInt{
+	// 			V: 200,
+	// 		},
+	// 	},
+	// }
+	// error := api.CallContract(keyBag, account, contract.ID, functionName, valueList)
+	// fmt.Println(error)
+
+	// test Luatype number
+	valueList := []types.LuaTypeParam{
+		types.LuaTypeParam{
+			types.LuaTypeNumber,
+			types.LuaNumber{
+				V: 3.14,
+			},
+		},
+	}
+	error := api.CallContract(keyBag, account, contract.ID, functionName, valueList)
+	fmt.Println(error)
+
+	// test luatype table
+	// valueList := []types.LuaTypeParam{
+	// 	types.LuaTypeParam{
+	// 		types.LuaTypeTable,
+	// 		types.LuaTable{
+	// 			Value: types.LuaMap{
+	// 				types.LuaTypeItem{
+	// 					types.LuaKey{
+	// 						Key: types.LuaType{
+	// 							types.LuaString{V: "key1"},
+	// 						},
+	// 					},
+	// 					types.LuaString{V: "value1"},
+	// 				},
+	// 				types.LuaTypeItem{
+	// 					types.LuaKey{
+	// 						Key: types.LuaType{
+	// 							types.LuaInt{V: 200},
+	// 						},
+	// 					},
+	// 					types.LuaString{V: "value2"},
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// }
+	// error := api.CallContract(keyBag, account, contract.ID, functionName, valueList)
+	// fmt.Println(error)
+}
+
+func runFuncName() string {
+	pc := make([]uintptr, 1)
+	runtime.Callers(2, pc)
+	f := runtime.FuncForPC(pc[0])
+	return f.Name()
+}
+
+func main() {
+	fmt.Printf(">>> %v\n", runFuncName())
+	// config.SetCurrent(config.ChainIDTestnet)
+	// wsURL := "wss://test.cocosbcx.net"
+
+	// config.SetCurrent(config.ChainIDMainnet)
+	// wsURL := "wss://api.cocosbcx.net"
+
+	// config.SetCurrent(config.ChainIDLocal)
 	// wsURL := "ws://127.0.0.1:8049"
-	// config.SetCurrent(chainID)
+
+	chainID := config.ChainIDLocal
+	wsURL := "ws://127.0.0.1:8049"
+	config.SetCurrent(chainID)
 
 	// chain api 测试
 	log.Println("------- chain api test ----------")
@@ -418,24 +820,47 @@ func main() {
 	// testGetBlockHeader(api, 28738)
 	// testBroadcastTrx(api)
 
-	// assetName := "USDG"
-	// testCreateAsset(api, assetName)
-
-	// newAccountName := "tester20"
-	// testRegisterAccount(api, newAccountName)
-	// testUpgradeAccount(api, newAccountName)
-
 	// operation
 	// testTransfer(api)
 
-	testGetWitness(api)
-	testGetCommitteeMember(api)
-	testCreateContract(api)
-	testGetVestingBalances(api)
+	// asset_name := "USDG"
+	// testCreateAsset(api, asset_name)
 
-	testGetConnectedPeers(api)
-	testGetInfo(api)
-	testGetGlobalProperties(api)
-	testGetChainProperties(api)
+	// new_account_name := "tester3"
+	// testRegisterAccount(api, new_account_name)
+	// testUpgradeAccount(api, new_account_name)
+
+	// testGetWitness(api)
+	// testGetCommitteeMember(api)
+	// testCreateContract(api)
+	// testGetVestingBalances(api)
+
+	// testGetConnectedPeers(api)
+	// testGetInfo(api)
+	// testGetGlobalProperties(api)
+	// testGetChainProperties(api)
+
+	// contract
+	// fmt.Println("\n\n--------------- create contract by file")
+	// testCreateContractFromFile(api)
+
+	// fmt.Println("\n\n--------------- get contract")
+	// testGetContract(api, "1.16.1")
+
+	// testGetContract(api, "1.16.2")
+	// testGetContract(api, "1.16.3")
+	// testGetContract(api, "1.16.5")
+	// testGetContract(api, "1.16.9")
+	// testGetContracts(api)
+
+	// testReveseContractFromFile(api)
+	// testCallContract(api)
+
+	// testCreateContractFromFile2(api)
+	// testCallContract2(api)
+	// testCallContract3(api)
+
+	// testReviseContractFromFile2(api)
+	testCallContract4(api)
 
 }
