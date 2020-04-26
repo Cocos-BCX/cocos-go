@@ -41,7 +41,7 @@ import (
 	sdk "github.com/Cocos-BCX/cocos-go"
 )
 
-wsURL := "ws://test.cocosbcx.net"
+wsURL := "wss://test.cocosbcx.net"
 
 api := sdk.NewWebsocketAPI(wsURL)
 if err := api.Connect(); err != nil {
@@ -90,7 +90,7 @@ import (
 	sdk "github.com/Cocos-BCX/cocos-go"
 )
 
-wsFullApiUrl := "ws://test.cocosbcx.net"
+wsFullApiUrl := "wss://test.cocosbcx.net"
 
 //wsFullApiUrl serves as "quick startup" fallback endpoint here, 
 //until the latency tester provides the first results.
