@@ -48,14 +48,6 @@ func (o LuaInt) Marshal(enc *util.TypeEncoder) error {
 	return nil
 }
 
-// MarshalJSON ...
-// func (o LuaInt) MarshalJSON() ([]byte, error) {
-// 	return ffjson.Marshal([]interface{}{
-// 		LuaTypeInt,
-// 		o,
-// 	})
-// }
-
 // LuaNumber ... float64 eg:[1, {"v": 3.14}]
 type LuaNumber struct {
 	V float64 `json:"v"`
@@ -72,14 +64,6 @@ func (o LuaNumber) Marshal(enc *util.TypeEncoder) error {
 	}
 	return nil
 }
-
-// MarshalJSON ...
-// func (o LuaNumber) MarshalJSON() ([]byte, error) {
-// 	return ffjson.Marshal([]interface{}{
-// 		LuaTypeNumber,
-// 		o,
-// 	})
-// }
 
 // LuaString ... string eg:[2, {"v": "hello, Lua contract"}]
 type LuaString struct {
@@ -99,14 +83,6 @@ func (o LuaString) Marshal(enc *util.TypeEncoder) error {
 	return nil
 }
 
-// MarshalJSON ...
-// func (o LuaString) MarshalJSON() ([]byte, error) {
-// 	return ffjson.Marshal([]interface{}{
-// 		LuaTypeString,
-// 		o,
-// 	})
-// }
-
 // LuaBool ... bool eg:[3, {"v": true}]
 type LuaBool struct {
 	V bool `json:"v"`
@@ -123,14 +99,6 @@ func (o LuaBool) Marshal(enc *util.TypeEncoder) error {
 	}
 	return nil
 }
-
-// MarshalJSON ...
-// func (o LuaBool) MarshalJSON() ([]byte, error) {
-// 	return ffjson.Marshal([]interface{}{
-// 		LuaTypeBool,
-// 		o,
-// 	})
-// }
 
 // LuaType ... [type_index, {"v":type_obj}]
 type LuaType []interface{}
@@ -160,14 +128,6 @@ func (o LuaTable) Marshal(enc *util.TypeEncoder) error {
 	return nil
 }
 
-// MarshalJSON ...
-// func (o LuaTable) MarshalJSON() ([]byte, error) {
-// 	return ffjson.Marshal([]interface{}{
-// 		LuaTypeTable,
-// 		o,
-// 	})
-// }
-
 // LuaFunction ... eg: [5, {"v": {"is_var_arg": true, "arglist": ["arg1", "arg2", "arg3"]}}]
 type LuaFunction struct {
 	IsVarArg bool     `json:"is_var_arg"`
@@ -189,14 +149,6 @@ func (o LuaFunction) Marshal(enc *util.TypeEncoder) error {
 	}
 	return nil
 }
-
-// MarshalJSON ...
-// func (o LuaFunction) MarshalJSON() ([]byte, error) {
-// 	return ffjson.Marshal([]interface{}{
-// 		LuaTypeFunction,
-// 		o,
-// 	})
-// }
 
 // LuaTypeItem ... [LuaKey, LuaType]
 type LuaTypeItem []interface{}
