@@ -144,6 +144,8 @@ const (
 	OperationTypeCrontabRecover                                             //53
 	OperationTypeUpdateCollateralForGas                                     //54
 	OperationTypeAccountAuthentication                                      //55
+	OperationsTypeContractShareFee                                          //56
+	OperationsTypeUpdateGlobalPropertyExtensions                            //57
 )
 
 func (p OperationType) OperationName() string {

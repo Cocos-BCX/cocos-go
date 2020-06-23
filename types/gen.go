@@ -34,7 +34,7 @@ package types
 //go:generate genny -in=../gen/templates/objectid.go.tmpl -out=./gen_nhassetorderid.go gen "T1=NHAssetOrder"
 //go:generate genny -in=../gen/templates/objectid.go.tmpl -out=./gen_contractbincodeid.go gen "T1=ContractBinCode"
 
-
+// go:generate genny -in=../gen/templates/objectid.go.tmpl -out=./gen_globalextensionspropertyid.go gen "T1=GlobalExtensionsProperty"
 
 //go:generate stringer -type=OperationType
 //go:generate stringer -type=ObjectType

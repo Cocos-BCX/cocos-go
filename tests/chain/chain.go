@@ -787,8 +787,8 @@ func runFuncName() string {
 
 func main() {
 	fmt.Printf(">>> %v\n", runFuncName())
-	// config.SetCurrent(config.ChainIDTestnet)
-	// wsURL := "wss://test.cocosbcx.net"
+	config.SetCurrent(config.ChainIDTestnet)
+	wsURL := "wss://test.cocosbcx.net"
 
 	// config.SetCurrent(config.ChainIDMainnet)
 	// wsURL := "wss://api.cocosbcx.net"
@@ -796,9 +796,9 @@ func main() {
 	// config.SetCurrent(config.ChainIDLocal)
 	// wsURL := "ws://127.0.0.1:8049"
 
-	chainID := config.ChainIDLocal
-	wsURL := "ws://127.0.0.1:8049"
-	config.SetCurrent(chainID)
+	// chainID := config.ChainIDLocal
+	// wsURL := "ws://127.0.0.1:8049"
+	// config.SetCurrent(chainID)
 
 	// chain api 测试
 	log.Println("------- chain api test ----------")
@@ -808,12 +808,12 @@ func main() {
 	}
 
 	// get chain data
-	// testAPIID(api)
+	testAPIID(api)
 	// getData(api)
 	// testListAssets(api)
 	// testHeadBlockPrefix(api)
 	// testGetAccountByName(api)
-	// testGetAccountBalances(api)
+	testGetAccountBalances(api)
 	// testGetAccountHistory(api)
 	// testGetAccounts(api)
 	// testGetBlock(api, 28735, 28739)
@@ -861,6 +861,6 @@ func main() {
 	// testCallContract3(api)
 
 	// testReviseContractFromFile2(api)
-	testCallContract4(api)
+	// testCallContract4(api)
 
 }

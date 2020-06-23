@@ -119,6 +119,9 @@ type WebsocketAPI interface {
 	GetConnectedPeers() (*types.NetWorkPeers, error)
 	Info() (*types.Info, error)
 
+	// GetGlobalPropertyExtensions()()
+	// get_global_property_extensions
+
 	// improt_balances
 
 	// sell_asset
